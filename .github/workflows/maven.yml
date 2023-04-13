@@ -12,7 +12,7 @@ on:
   push:
     branches: [ "main" ]
   pull_request:
-    branches: [ "feat/work-in-progress" ]
+    branches: [ "main" ]
 
 jobs:
   build:
