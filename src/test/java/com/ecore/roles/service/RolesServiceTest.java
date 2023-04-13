@@ -52,7 +52,7 @@ class RolesServiceTest {
     }
 
     @Test
-    public void shouldReturnRoleWhenRoleIdExists() {
+    public void shouldReturnRolesByFilter() {
         Role developerRole = DEVELOPER_ROLE();
         when(roleRepository.findById(developerRole.getId())).thenReturn(Optional.of(developerRole));
 
