@@ -52,7 +52,7 @@ class RolesServiceTest {
     }
 
     @Test
-    public void shouldReturnRolesByFilter() {
+    public void shouldReturnRoleWhenRoleIdExists() {
         Role developerRole = DEVELOPER_ROLE();
         when(roleRepository.findById(developerRole.getId())).thenReturn(Optional.of(developerRole));
 
@@ -63,7 +63,7 @@ class RolesServiceTest {
     }
 
     @Test
-    public void shouldReturnRolesWhenRolesIdExists() {
+    public void shouldReturnRolesByFilter() {
         User user = GIANNI_USER();
         List<Membership> expectedMemberships = List.of(DEFAULT_MEMBERSHIP());
 
