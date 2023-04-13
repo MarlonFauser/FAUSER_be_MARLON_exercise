@@ -20,7 +20,7 @@ public class MembershipRepositoryTest {
     private MembershipRepository membershipRepository;
 
     @Test
-    public void testFindByUserIdAndTeamId() {
+    public void shouldReturnByUserIdAndTeamId() {
         Membership membership1 = DEFAULT_MEMBERSHIP();
         membership1.setUserId(UUID.randomUUID());
         membership1.setTeamId(UUID.randomUUID());
@@ -44,7 +44,7 @@ public class MembershipRepositoryTest {
     }
 
     @Test
-    public void testFindByUserId() {
+    public void shouldReturnByUserId() {
         UUID actualUserId = UUID.randomUUID();
 
         Membership membership1 = DEFAULT_MEMBERSHIP();
@@ -68,7 +68,7 @@ public class MembershipRepositoryTest {
     }
 
     @Test
-    public void testFindByUserTeamId() {
+    public void shouldReturnByTeamId() {
         UUID actualTeamId = UUID.randomUUID();
 
         Membership membership1 = DEFAULT_MEMBERSHIP();
@@ -95,7 +95,7 @@ public class MembershipRepositoryTest {
     }
 
     @Test
-    public void testFindByRoleId() {
+    public void shouldReturnByRoleId() {
         Membership membership1 = DEFAULT_MEMBERSHIP();
         membership1.setUserId(UUID.randomUUID());
         membership1.setRole(DEVELOPER_ROLE());

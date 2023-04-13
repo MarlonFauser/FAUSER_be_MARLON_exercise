@@ -5,6 +5,7 @@ import com.ecore.roles.model.Role;
 import com.ecore.roles.repository.MembershipRepository;
 import com.ecore.roles.utils.RestAssuredHelper;
 import com.ecore.roles.web.dto.MembershipDto;
+import com.ecore.roles.web.dto.TeamDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -124,7 +125,8 @@ public class MembershipsApiTests {
     @Test
     void shouldFailToAssignRoleWhenMembershipIsInvalid() {
         Membership expectedMembership = INVALID_MEMBERSHIP();
-        mockGetTeamById(mockServer, expectedMembership.getTeamId(), ORDINARY_CORAL_LYNX_TEAM());
+        mockGetTeamById(mockServer, expectedMembership.getTeamId(),
+                TeamDto.fromModel(ORDINARY_CORAL_LYNX_TEAM()));
 
         assignRoleToMembership(expectedMembership)
                 .validate(403,
@@ -162,7 +164,8 @@ public class MembershipsApiTests {
 
     private MembershipDto createDefaultMembership() {
         Membership expectedMembership = DEFAULT_MEMBERSHIP();
-        mockGetTeamById(mockServer, expectedMembership.getTeamId(), ORDINARY_CORAL_LYNX_TEAM());
+        mockGetTeamById(mockServer, expectedMembership.getTeamId(),
+                TeamDto.fromModel(ORDINARY_CORAL_LYNX_TEAM()));
 
         return createMembership(expectedMembership)
                 .statusCode(201)

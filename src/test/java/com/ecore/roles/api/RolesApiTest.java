@@ -6,6 +6,8 @@ import com.ecore.roles.repository.MembershipRepository;
 import com.ecore.roles.repository.RoleRepository;
 import com.ecore.roles.utils.RestAssuredHelper;
 import com.ecore.roles.web.dto.RoleDto;
+import com.ecore.roles.web.dto.TeamDto;
+import com.ecore.roles.web.dto.UserDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -132,8 +134,9 @@ public class RolesApiTest {
     @Test
     void shouldGetRoleByUserIdAndTeamId() {
         Membership expectedMembership = DEFAULT_MEMBERSHIP();
-        mockGetTeamById(mockServer, ORDINARY_CORAL_LYNX_TEAM_UUID, ORDINARY_CORAL_LYNX_TEAM());
-        mockGetUserById(mockServer, GIANNI_USER_UUID, GIANNI_USER());
+        mockGetTeamById(mockServer, ORDINARY_CORAL_LYNX_TEAM_UUID,
+                TeamDto.fromModel(ORDINARY_CORAL_LYNX_TEAM()));
+        mockGetUserById(mockServer, GIANNI_USER_UUID, UserDto.fromModel(GIANNI_USER()));
         createMembership(expectedMembership)
                 .statusCode(201);
 
@@ -145,8 +148,9 @@ public class RolesApiTest {
     @Test
     void shouldGetRolesByFilter() {
         Membership expectedMembership = DEFAULT_MEMBERSHIP();
-        mockGetTeamById(mockServer, ORDINARY_CORAL_LYNX_TEAM_UUID, ORDINARY_CORAL_LYNX_TEAM());
-        mockGetUserById(mockServer, GIANNI_USER_UUID, GIANNI_USER());
+        mockGetTeamById(mockServer, ORDINARY_CORAL_LYNX_TEAM_UUID,
+                TeamDto.fromModel(ORDINARY_CORAL_LYNX_TEAM()));
+        mockGetUserById(mockServer, GIANNI_USER_UUID, UserDto.fromModel(GIANNI_USER()));
         createMembership(expectedMembership)
                 .statusCode(201);
 
