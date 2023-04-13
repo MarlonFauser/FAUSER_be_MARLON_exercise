@@ -6,8 +6,8 @@ import com.ecore.roles.exception.ResourceExistsException;
 import com.ecore.roles.exception.ResourceNotFoundException;
 import com.ecore.roles.model.Membership;
 import com.ecore.roles.model.Role;
-import com.ecore.roles.repository.MembershipRepository;
 import com.ecore.roles.repository.RoleRepository;
+import com.ecore.roles.service.MembershipsService;
 import com.ecore.roles.service.RolesService;
 import com.ecore.roles.service.TeamsService;
 import com.ecore.roles.service.UsersService;
@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -25,10 +24,8 @@ import java.util.stream.Collectors;
 @Service
 public class RolesServiceImpl implements RolesService {
 
-    public static final String DEFAULT_ROLE = "Developer";
-
     private final RoleRepository roleRepository;
-    private final MembershipRepository membershipRepository;
+    private final MembershipsService membershipsService;
     private final TeamsService teamsService;
 
     private final UsersService usersService;
@@ -36,11 +33,11 @@ public class RolesServiceImpl implements RolesService {
     @Autowired
     public RolesServiceImpl(
             RoleRepository roleRepository,
-            MembershipRepository membershipRepository,
+            MembershipsService membershipsService,
             TeamsService teamsService,
             UsersService usersService) {
         this.roleRepository = roleRepository;
-        this.membershipRepository = membershipRepository;
+        this.membershipsService = membershipsService;
         this.teamsService = teamsService;
         this.usersService = usersService;
     }
@@ -65,9 +62,8 @@ public class RolesServiceImpl implements RolesService {
     }
 
     @Override
-    public List<Role> GetRoles(UUID userId, UUID teamId) {
-        List<Membership> memberships = membershipRepository.findByUserIdAndTeamId(Optional.ofNullable(userId),
-                Optional.ofNullable(teamId));
+    public List<Role> GetRolesByFilter(UUID userId, UUID teamId) {
+        List<Membership> memberships = membershipsService.getMembershipsByFilter(userId, teamId);
 
         return memberships.stream().map(Membership::getRole).collect(Collectors.toList());
     }
@@ -80,7 +76,7 @@ public class RolesServiceImpl implements RolesService {
         if (usersService.getUser(userId) == null)
             throw new ResourceNotFoundException(User.class, userId);
 
-        Membership membership = membershipRepository.findByUserIdAndTeamId(userId, teamId)
+        Membership membership = membershipsService.getMembershipsByFilter(userId, teamId).stream().findFirst()
                 .orElseThrow(() -> new ResourceNotFoundException(Role.class));
 
         return membership.getRole();

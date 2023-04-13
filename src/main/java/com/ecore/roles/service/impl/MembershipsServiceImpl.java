@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static java.util.Optional.ofNullable;
@@ -44,7 +45,7 @@ public class MembershipsServiceImpl implements MembershipsService {
     public Membership createMembership(@NonNull Membership m) {
         validateIfMembershipDoesNotExistYet(m);
 
-        validateRoleId(m);
+        validateIfRoleExists(m);
 
         validateIfTeamExists(m);
 
@@ -53,7 +54,7 @@ public class MembershipsServiceImpl implements MembershipsService {
 
     @Override
     public Membership assignRoleToMembership(@NonNull Membership m) {
-        validateRoleId(m);
+        validateIfRoleExists(m);
 
         validateIfUserBelongsToTeam(m);
 
@@ -61,33 +62,43 @@ public class MembershipsServiceImpl implements MembershipsService {
     }
 
     @Override
-    public List<Membership> getMemberships(@NonNull UUID rid) {
+    public List<Membership> getMembershipsByRoleId(@NonNull UUID rid) {
         return membershipRepository.findByRoleId(rid);
     }
 
-    private void validateRoleId(Membership m) {
+    @Override
+    public List<Membership> getMembershipsByFilter(UUID userId, UUID teamId) {
+        return membershipRepository.findByUserIdOrTeamId(userId, teamId);
+    }
+
+    @Override
+    public Optional<Membership> getMembership(UUID userId, UUID teamId) {
+        return membershipRepository.findByUserIdAndTeamId(userId, teamId);
+    }
+
+    private void validateIfRoleExists(Membership m) {
         UUID roleId = ofNullable(m.getRole()).map(Role::getId)
                 .orElseThrow(() -> new InvalidArgumentException(Role.class));
 
         roleRepository.findById(roleId).orElseThrow(() -> new ResourceNotFoundException(Role.class, roleId));
     }
 
+    private void validateIfTeamExists(Membership m) {
+        if (teamsService.getTeam(m.getTeamId()) == null) {
+            throw new ResourceNotFoundException(Team.class, m.getTeamId());
+        }
+    }
+
     private void validateIfMembershipDoesNotExistYet(Membership m) {
-        if (membershipRepository.findByUserIdAndTeamId(m.getUserId(), m.getTeamId())
-                .isPresent()) {
+        if (getMembership(m.getUserId(), m.getTeamId()).isPresent()) {
             throw new ResourceExistsException(Membership.class);
         }
     }
 
     private void validateIfUserBelongsToTeam(Membership m) {
-        membershipRepository.findByUserIdAndTeamId(m.getUserId(), m.getTeamId())
-                .orElseThrow(() -> new ForbiddenException(
-                        Membership.class, "The provided user doesn't belong to the provided team."));
-    }
-
-    private void validateIfTeamExists(Membership m) {
-        if (teamsService.getTeam(m.getTeamId()) == null) {
-            throw new ResourceNotFoundException(Team.class, m.getTeamId());
+        if (getMembershipsByFilter(m.getUserId(), m.getTeamId()).isEmpty()) {
+            throw new ForbiddenException(Membership.class,
+                    "The provided user doesn't belong to the provided team.");
         }
     }
 }

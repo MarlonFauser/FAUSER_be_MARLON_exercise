@@ -54,7 +54,7 @@ public class RolesRestController implements RolesApi {
     @GetMapping(
             path = "/search",
             produces = {"application/json"})
-    public ResponseEntity<RoleDto> getRole(
+    public ResponseEntity<RoleDto> getRoleByUserIdAndTeamId(
             @RequestParam UUID teamMemberId,
             @RequestParam UUID teamId) {
         Role role = rolesService.GetRole(teamMemberId, teamId);
@@ -68,10 +68,10 @@ public class RolesRestController implements RolesApi {
     @GetMapping(
             path = "/filter",
             produces = {"application/json"})
-    public ResponseEntity<List<RoleDto>> getRoles(
-            @RequestParam UUID teamMemberId,
-            @RequestParam UUID teamId) {
-        List<Role> getRoles = rolesService.GetRoles(teamMemberId, teamId);
+    public ResponseEntity<List<RoleDto>> getRolesByFilter(
+            @RequestParam(required = false) UUID teamMemberId,
+            @RequestParam(required = false) UUID teamId) {
+        List<Role> getRoles = rolesService.GetRolesByFilter(teamMemberId, teamId);
 
         List<RoleDto> roleDtoList = new ArrayList<>();
 

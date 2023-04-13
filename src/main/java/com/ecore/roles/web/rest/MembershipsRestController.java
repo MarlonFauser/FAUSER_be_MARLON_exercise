@@ -53,7 +53,7 @@ public class MembershipsRestController implements MembershipsApi {
     public ResponseEntity<List<MembershipDto>> getMemberships(
             @RequestParam UUID roleId) {
 
-        List<Membership> memberships = membershipsService.getMemberships(roleId);
+        List<Membership> memberships = membershipsService.getMembershipsByRoleId(roleId);
 
         List<MembershipDto> newMembershipDto = new ArrayList<>();
 

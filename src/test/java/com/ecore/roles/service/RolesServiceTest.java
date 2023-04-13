@@ -4,7 +4,6 @@ import com.ecore.roles.client.model.User;
 import com.ecore.roles.exception.ResourceNotFoundException;
 import com.ecore.roles.model.Membership;
 import com.ecore.roles.model.Role;
-import com.ecore.roles.repository.MembershipRepository;
 import com.ecore.roles.repository.RoleRepository;
 import com.ecore.roles.service.impl.RolesServiceImpl;
 import org.junit.jupiter.api.Test;
@@ -32,7 +31,7 @@ class RolesServiceTest {
     private RoleRepository roleRepository;
 
     @Mock
-    private MembershipRepository membershipRepository;
+    private MembershipsService membershipsService;
 
     @Test
     public void shouldCreateRole() {
@@ -67,11 +66,10 @@ class RolesServiceTest {
         User user = GIANNI_USER();
         List<Membership> expectedMemberships = List.of(DEFAULT_MEMBERSHIP());
 
-        when(membershipRepository.findByUserIdAndTeamId(
-                Optional.of(user.getId()), Optional.of(ORDINARY_CORAL_LYNX_TEAM_UUID)))
-                        .thenReturn(expectedMemberships);
+        when(membershipsService.getMembershipsByFilter(user.getId(), ORDINARY_CORAL_LYNX_TEAM_UUID))
+                .thenReturn(expectedMemberships);
 
-        List<Role> roles = rolesService.GetRoles(user.getId(), ORDINARY_CORAL_LYNX_TEAM_UUID);
+        List<Role> roles = rolesService.GetRolesByFilter(user.getId(), ORDINARY_CORAL_LYNX_TEAM_UUID);
 
         assertEquals(roles,
                 expectedMemberships.stream().map(Membership::getRole).collect(Collectors.toList()));

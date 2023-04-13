@@ -61,12 +61,21 @@ public class RestAssuredHelper {
                 .then());
     }
 
-    public static EcoreValidatableResponse getRole(UUID userId, UUID teamId) {
+    public static EcoreValidatableResponse getRoleByUserIdAndTeamId(UUID userId, UUID teamId) {
         return sendRequest(given()
                 .queryParam("teamMemberId", userId)
                 .queryParam("teamId", teamId)
                 .when()
                 .get("/v1/roles/search")
+                .then());
+    }
+
+    public static EcoreValidatableResponse getRolesByFilter(UUID userId, UUID teamId) {
+        return sendRequest(given()
+                .queryParam("teamMemberId", userId)
+                .queryParam("teamId", teamId)
+                .when()
+                .get("/v1/roles/filter")
                 .then());
     }
 
