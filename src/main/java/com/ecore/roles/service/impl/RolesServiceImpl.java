@@ -2,10 +2,10 @@ package com.ecore.roles.service.impl;
 
 import com.ecore.roles.exception.ResourceExistsException;
 import com.ecore.roles.exception.ResourceNotFoundException;
+import com.ecore.roles.model.Membership;
 import com.ecore.roles.model.Role;
 import com.ecore.roles.repository.MembershipRepository;
 import com.ecore.roles.repository.RoleRepository;
-import com.ecore.roles.service.MembershipsService;
 import com.ecore.roles.service.RolesService;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
@@ -13,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Log4j2
 @Service
@@ -23,16 +25,13 @@ public class RolesServiceImpl implements RolesService {
 
     private final RoleRepository roleRepository;
     private final MembershipRepository membershipRepository;
-    private final MembershipsService membershipsService;
 
     @Autowired
     public RolesServiceImpl(
             RoleRepository roleRepository,
-            MembershipRepository membershipRepository,
-            MembershipsService membershipsService) {
+            MembershipRepository membershipRepository) {
         this.roleRepository = roleRepository;
         this.membershipRepository = membershipRepository;
-        this.membershipsService = membershipsService;
     }
 
     @Override
@@ -52,6 +51,21 @@ public class RolesServiceImpl implements RolesService {
     @Override
     public List<Role> GetRoles() {
         return roleRepository.findAll();
+    }
+
+    @Override
+    public List<Role> GetRoles(UUID userId, UUID teamId) {
+        List<Membership> memberships = membershipRepository.findByUserIdAndTeamId(Optional.ofNullable(userId),
+                Optional.ofNullable(teamId));
+        return memberships.stream().map(Membership::getRole).collect(Collectors.toList());
+    }
+
+    @Override
+    public Role GetRole(UUID userId, UUID teamId) {
+        Membership membership = membershipRepository.findByUserIdAndTeamId(userId, teamId)
+                .orElseThrow(() -> new ResourceNotFoundException(Role.class));
+
+        return membership.getRole();
     }
 
     private Role getDefaultRole() {

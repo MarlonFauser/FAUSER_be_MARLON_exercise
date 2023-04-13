@@ -13,9 +13,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
+import java.util.UUID;
 
-import static com.ecore.roles.utils.TestData.DEFAULT_MEMBERSHIP;
-import static com.ecore.roles.utils.TestData.DEVELOPER_ROLE;
+import static com.ecore.roles.utils.TestData.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -49,8 +49,11 @@ class MembershipsServiceTest {
         when(membershipRepository
                 .save(expectedMembership))
                         .thenReturn(expectedMembership);
+        when(teamsService
+                .getTeam(expectedMembership.getTeamId()))
+                        .thenReturn(ORDINARY_CORAL_LYNX_TEAM());
 
-        Membership actualMembership = membershipsService.assignRoleToMembership(expectedMembership);
+        Membership actualMembership = membershipsService.createMembership(expectedMembership);
 
         assertNotNull(actualMembership);
         assertEquals(actualMembership, expectedMembership);
@@ -60,7 +63,7 @@ class MembershipsServiceTest {
     @Test
     public void shouldFailToCreateMembershipWhenMembershipsIsNull() {
         assertThrows(NullPointerException.class,
-                () -> membershipsService.assignRoleToMembership(null));
+                () -> membershipsService.createMembership(null));
     }
 
     @Test
@@ -71,7 +74,7 @@ class MembershipsServiceTest {
                         .thenReturn(Optional.of(expectedMembership));
 
         ResourceExistsException exception = assertThrows(ResourceExistsException.class,
-                () -> membershipsService.assignRoleToMembership(expectedMembership));
+                () -> membershipsService.createMembership(expectedMembership));
 
         assertEquals("Membership already exists", exception.getMessage());
         verify(roleRepository, times(0)).getById(any());
@@ -85,10 +88,10 @@ class MembershipsServiceTest {
         expectedMembership.setRole(null);
 
         InvalidArgumentException exception = assertThrows(InvalidArgumentException.class,
-                () -> membershipsService.assignRoleToMembership(expectedMembership));
+                () -> membershipsService.createMembership(expectedMembership));
 
         assertEquals("Invalid 'Role' object", exception.getMessage());
-        verify(membershipRepository, times(0)).findByUserIdAndTeamId(any(), any());
+        verify(membershipRepository, times(1)).findByUserIdAndTeamId((UUID) any(), any());
         verify(roleRepository, times(0)).getById(any());
         verify(usersService, times(0)).getUser(any());
         verify(teamsService, times(0)).getTeam(any());

@@ -29,15 +29,13 @@ public class RolesRestController implements RolesApi {
     public ResponseEntity<RoleDto> createRole(
             @Valid @RequestBody RoleDto role) {
         return ResponseEntity
-                .status(200)
+                .status(201)
                 .body(fromModel(rolesService.CreateRole(role.toModel())));
     }
 
     @Override
-    @PostMapping(
-            produces = {"application/json"})
+    @GetMapping(produces = {"application/json"})
     public ResponseEntity<List<RoleDto>> getRoles() {
-
         List<Role> getRoles = rolesService.GetRoles();
 
         List<RoleDto> roleDtoList = new ArrayList<>();
@@ -53,7 +51,42 @@ public class RolesRestController implements RolesApi {
     }
 
     @Override
-    @PostMapping(
+    @GetMapping(
+            path = "/search",
+            produces = {"application/json"})
+    public ResponseEntity<RoleDto> getRole(
+            @RequestParam UUID teamMemberId,
+            @RequestParam UUID teamId) {
+        Role role = rolesService.GetRole(teamMemberId, teamId);
+
+        return ResponseEntity
+                .status(200)
+                .body(fromModel(role));
+    }
+
+    @Override
+    @GetMapping(
+            path = "/filter",
+            produces = {"application/json"})
+    public ResponseEntity<List<RoleDto>> getRoles(
+            @RequestParam UUID teamMemberId,
+            @RequestParam UUID teamId) {
+        List<Role> getRoles = rolesService.GetRoles(teamMemberId, teamId);
+
+        List<RoleDto> roleDtoList = new ArrayList<>();
+
+        for (Role role : getRoles) {
+            RoleDto roleDto = fromModel(role);
+            roleDtoList.add(roleDto);
+        }
+
+        return ResponseEntity
+                .status(200)
+                .body(roleDtoList);
+    }
+
+    @Override
+    @GetMapping(
             path = "/{roleId}",
             produces = {"application/json"})
     public ResponseEntity<RoleDto> getRole(
@@ -62,5 +95,4 @@ public class RolesRestController implements RolesApi {
                 .status(200)
                 .body(fromModel(rolesService.GetRole(roleId)));
     }
-
 }

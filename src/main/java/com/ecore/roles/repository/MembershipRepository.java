@@ -13,5 +13,7 @@ public interface MembershipRepository extends JpaRepository<Membership, UUID> {
 
     Optional<Membership> findByUserIdAndTeamId(UUID userId, UUID teamId);
 
+    List<Membership> findByUserIdAndTeamId(Optional<UUID> userId, Optional<UUID> teamId);
+
     List<Membership> findByRoleId(UUID roleId);
 }

@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.UUID;
 
 public interface MembershipsApi {
+    ResponseEntity<MembershipDto> createMembership(
+            MembershipDto membership);
 
     ResponseEntity<MembershipDto> assignRoleToMembership(
             MembershipDto membership);

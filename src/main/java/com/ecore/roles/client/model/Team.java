@@ -19,17 +19,13 @@ import java.util.UUID;
 @Builder
 @EqualsAndHashCode
 public class Team {
-
     @Id
     @JsonProperty
     private UUID id;
-
     @JsonProperty
     private String name;
-
     @JsonProperty
     private UUID teamLeadId;
-
     @JsonProperty
     private List<UUID> teamMemberIds;
 }

@@ -52,6 +52,15 @@ public class RestAssuredHelper {
                 .then());
     }
 
+    public static EcoreValidatableResponse getRoles(UUID userId, UUID teamId) {
+        return sendRequest(given()
+                .queryParam("teamMemberId", userId)
+                .queryParam("teamId", teamId)
+                .when()
+                .get("/v1/roles/filter")
+                .then());
+    }
+
     public static EcoreValidatableResponse getRole(UUID userId, UUID teamId) {
         return sendRequest(given()
                 .queryParam("teamMemberId", userId)
@@ -66,6 +75,14 @@ public class RestAssuredHelper {
                 .contentType(JSON)
                 .when()
                 .post("/v1/roles/memberships")
+                .then());
+    }
+
+    public static EcoreValidatableResponse assignRoleToMembership(Membership membership) {
+        return sendRequest(givenNullableBody(MembershipDto.fromModel(membership))
+                .contentType(JSON)
+                .when()
+                .patch("/v1/roles/memberships")
                 .then());
     }
 
