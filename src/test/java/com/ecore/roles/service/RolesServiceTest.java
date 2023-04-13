@@ -1,6 +1,8 @@
 package com.ecore.roles.service;
 
+import com.ecore.roles.client.model.User;
 import com.ecore.roles.exception.ResourceNotFoundException;
+import com.ecore.roles.model.Membership;
 import com.ecore.roles.model.Role;
 import com.ecore.roles.repository.MembershipRepository;
 import com.ecore.roles.repository.RoleRepository;
@@ -11,14 +13,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-import static com.ecore.roles.utils.TestData.DEVELOPER_ROLE;
-import static com.ecore.roles.utils.TestData.UUID_1;
+import static com.ecore.roles.utils.TestData.*;
 import static java.lang.String.format;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,9 +33,6 @@ class RolesServiceTest {
 
     @Mock
     private MembershipRepository membershipRepository;
-
-    @Mock
-    private MembershipsService membershipsService;
 
     @Test
     public void shouldCreateRole() {
@@ -62,6 +60,21 @@ class RolesServiceTest {
 
         assertNotNull(role);
         assertEquals(developerRole, role);
+    }
+
+    @Test
+    public void shouldReturnRolesWhenRolesIdExists() {
+        User user = GIANNI_USER();
+        List<Membership> expectedMemberships = List.of(DEFAULT_MEMBERSHIP());
+
+        when(membershipRepository.findByUserIdAndTeamId(
+                Optional.of(user.getId()), Optional.of(ORDINARY_CORAL_LYNX_TEAM_UUID)))
+                        .thenReturn(expectedMemberships);
+
+        List<Role> roles = rolesService.GetRoles(user.getId(), ORDINARY_CORAL_LYNX_TEAM_UUID);
+
+        assertEquals(roles,
+                expectedMemberships.stream().map(Membership::getRole).collect(Collectors.toList()));
     }
 
     @Test

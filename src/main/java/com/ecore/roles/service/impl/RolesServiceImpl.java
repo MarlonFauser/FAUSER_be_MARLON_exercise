@@ -68,6 +68,7 @@ public class RolesServiceImpl implements RolesService {
     public List<Role> GetRoles(UUID userId, UUID teamId) {
         List<Membership> memberships = membershipRepository.findByUserIdAndTeamId(Optional.ofNullable(userId),
                 Optional.ofNullable(teamId));
+
         return memberships.stream().map(Membership::getRole).collect(Collectors.toList());
     }
 
