@@ -21,12 +21,25 @@ public class MockUtils {
 
     public static void mockGetUserById(MockRestServiceServer mockServer, UUID userId, UserDto user) {
         try {
-            mockServer.expect(requestTo("http://test.com/users/" + userId))
+            mockServer.expect(ExpectedCount.manyTimes(), requestTo("http://test.com/users/" + userId))
                     .andExpect(method(HttpMethod.GET))
                     .andRespond(
                             withStatus(HttpStatus.OK)
                                     .contentType(MediaType.APPLICATION_JSON)
                                     .body(new ObjectMapper().writeValueAsString(user)));
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void mockGetUsers(MockRestServiceServer mockServer, List<UserDto> users) {
+        try {
+            mockServer.expect(ExpectedCount.manyTimes(), requestTo("http://test.com/users"))
+                    .andExpect(method(HttpMethod.GET))
+                    .andRespond(
+                            withStatus(HttpStatus.OK)
+                                    .contentType(MediaType.APPLICATION_JSON)
+                                    .body(new ObjectMapper().writeValueAsString(users)));
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }

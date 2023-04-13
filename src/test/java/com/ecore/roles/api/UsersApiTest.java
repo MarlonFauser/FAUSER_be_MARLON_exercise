@@ -1,7 +1,7 @@
 package com.ecore.roles.api;
 
 import com.ecore.roles.utils.RestAssuredHelper;
-import com.ecore.roles.web.dto.TeamDto;
+import com.ecore.roles.web.dto.UserDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +19,10 @@ import static io.restassured.RestAssured.when;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class TeamsApiTest {
+public class UsersApiTest {
 
     private final RestTemplate restTemplate;
 
@@ -32,7 +32,7 @@ public class TeamsApiTest {
     private int port;
 
     @Autowired
-    public TeamsApiTest(
+    public UsersApiTest(
             RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
@@ -52,29 +52,29 @@ public class TeamsApiTest {
     }
 
     @Test
-    void shouldGetAllTeams() {
-        List<TeamDto> expectedTeams = List.of(TeamDto.fromModel(ORDINARY_CORAL_LYNX_TEAM()));
-        mockGetTeams(mockServer, expectedTeams);
+    void shouldGetAllUsers() {
+        List<UserDto> expectedUsers = List.of(UserDto.fromModel(GIANNI_USER()));
+        mockGetUsers(mockServer, expectedUsers);
 
-        TeamDto[] teams = getTeams().extract().as(TeamDto[].class);
+        UserDto[] users = getUsers().extract().as(UserDto[].class);
 
-        assertThat(teams.length).isEqualTo(1);
-        assertTrue(teams[0].getId().equals(expectedTeams.get(0).getId()));
+        assertThat(users.length).isEqualTo(1);
+        assertTrue(users[0].getId().equals(expectedUsers.get(0).getId()));
     }
 
     @Test
-    void shouldGetTeam() {
-        TeamDto expectedTeam = TeamDto.fromModel(ORDINARY_CORAL_LYNX_TEAM());
-        mockGetTeamById(mockServer, ORDINARY_CORAL_LYNX_TEAM_UUID, expectedTeam);
+    void shouldGetUser() {
+        UserDto expectedUser = UserDto.fromModel(GIANNI_USER());
+        mockGetUserById(mockServer, GIANNI_USER_UUID, expectedUser);
 
-        getTeam(ORDINARY_CORAL_LYNX_TEAM_UUID)
+        getUser(GIANNI_USER_UUID)
                 .statusCode(200)
-                .body("name", equalTo(expectedTeam.getName()));
+                .body("firstName", equalTo(expectedUser.getFirstName()));
     }
 
     @Test
-    void shouldFailToGetTeamWhenNotExist() {
-        mockGetTeamById(mockServer, UUID_1, null);
-        getTeam(UUID_1).validate(404, format("Team %s not found", UUID_1));
+    void shouldFailToGetUserWhenNotExist() {
+        mockGetUserById(mockServer, UUID_1, null);
+        getUser(UUID_1).validate(404, format("User %s not found", UUID_1));
     }
 }
