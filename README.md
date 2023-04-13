@@ -24,7 +24,7 @@ docker-compose up --build
 This will execute tests, build the jar, build the docker image and start the container. The first execution will take
 longer since all maven dependencies will be downloaded. But next executions will run significantly faster as
 dependencies are downloaded in a separate layer, thus cached. The `--build` triggers the Docker image build if there is
-any change in the source code. 
+any change in the source code.
 
 ## Build from source
 
