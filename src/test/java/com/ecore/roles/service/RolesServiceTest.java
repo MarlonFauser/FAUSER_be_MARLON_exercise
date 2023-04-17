@@ -19,7 +19,10 @@ import java.util.stream.Collectors;
 import static com.ecore.roles.utils.TestData.*;
 import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 @ExtendWith(MockitoExtension.class)
 class RolesServiceTest {
@@ -32,6 +35,12 @@ class RolesServiceTest {
 
     @Mock
     private MembershipsService membershipsService;
+
+    @Mock
+    private TeamsService teamsService;
+
+    @Mock
+    private UsersService usersService;
 
     @Test
     public void shouldCreateRole() {
@@ -73,6 +82,57 @@ class RolesServiceTest {
 
         assertEquals(roles,
                 expectedMemberships.stream().map(Membership::getRole).collect(Collectors.toList()));
+    }
+
+    @Test
+    public void shouldReturnRole() {
+        User user = GIANNI_USER();
+        Optional<Membership> expectedMembership = Optional.ofNullable(DEFAULT_MEMBERSHIP());
+
+        when(teamsService.getTeam(ORDINARY_CORAL_LYNX_TEAM_UUID)).thenReturn(ORDINARY_CORAL_LYNX_TEAM());
+        when(usersService.getUser(user.getId())).thenReturn(user);
+
+        when(membershipsService.getMembership(user.getId(), ORDINARY_CORAL_LYNX_TEAM_UUID))
+                .thenReturn(expectedMembership);
+
+        Role role = rolesService.GetRole(user.getId(), ORDINARY_CORAL_LYNX_TEAM_UUID);
+
+        assertTrue(expectedMembership.isPresent());
+        assertEquals(role, expectedMembership.get().getRole());
+        verify(teamsService, times(1)).getTeam(any());
+        verify(usersService, times(1)).getUser(any());
+        verify(membershipsService, times(1)).getMembership(any(), any());
+    }
+
+    @Test
+    public void shouldNotReturnRoleWhenTeamNotFound() {
+        User user = GIANNI_USER();
+
+        when(teamsService.getTeam(ORDINARY_CORAL_LYNX_TEAM_UUID)).thenReturn(null);
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
+                () -> rolesService.GetRole(user.getId(), ORDINARY_CORAL_LYNX_TEAM_UUID));
+
+        assertEquals(format("Team %s not found", ORDINARY_CORAL_LYNX_TEAM_UUID), exception.getMessage());
+        verify(teamsService, times(1)).getTeam(any());
+        verify(usersService, times(0)).getUser(any());
+        verify(membershipsService, times(0)).getMembership(any(), any());
+    }
+
+    @Test
+    public void shouldNotReturnRoleWhenUserNotFound() {
+        User user = GIANNI_USER();
+
+        when(teamsService.getTeam(ORDINARY_CORAL_LYNX_TEAM_UUID)).thenReturn(ORDINARY_CORAL_LYNX_TEAM());
+        when(usersService.getUser(user.getId())).thenReturn(null);
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
+                () -> rolesService.GetRole(user.getId(), ORDINARY_CORAL_LYNX_TEAM_UUID));
+
+        assertEquals(format("User %s not found", user.getId()), exception.getMessage());
+        verify(teamsService, times(1)).getTeam(any());
+        verify(usersService, times(1)).getUser(any());
+        verify(membershipsService, times(0)).getMembership(any(), any());
     }
 
     @Test

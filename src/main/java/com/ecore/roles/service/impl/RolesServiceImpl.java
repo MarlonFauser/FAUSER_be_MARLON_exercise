@@ -76,7 +76,7 @@ public class RolesServiceImpl implements RolesService {
         if (usersService.getUser(userId) == null)
             throw new ResourceNotFoundException(User.class, userId);
 
-        Membership membership = membershipsService.getMembershipsByFilter(userId, teamId).stream().findFirst()
+        Membership membership = membershipsService.getMembership(userId, teamId)
                 .orElseThrow(() -> new ResourceNotFoundException(Role.class));
 
         return membership.getRole();
