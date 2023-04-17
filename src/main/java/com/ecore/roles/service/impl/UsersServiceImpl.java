@@ -2,6 +2,7 @@ package com.ecore.roles.service.impl;
 
 import com.ecore.roles.client.UsersClient;
 import com.ecore.roles.client.model.User;
+import com.ecore.roles.exception.ResourceNotFoundException;
 import com.ecore.roles.service.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,10 @@ public class UsersServiceImpl implements UsersService {
     }
 
     public User getUser(UUID id) {
+        User user = usersClient.getUser(id).getBody();
+        if (user == null)
+            throw new ResourceNotFoundException(User.class, id);
+
         return usersClient.getUser(id).getBody();
     }
 

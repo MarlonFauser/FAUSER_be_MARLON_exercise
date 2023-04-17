@@ -16,7 +16,9 @@ public class TestData {
     public static final UUID UUID_4 = UUID.fromString("44444444-4444-4444-4444-444444444444");
 
     public static final UUID DEVELOPER_ROLE_UUID = UUID.fromString("1b3c333b-36e7-4b64-aa15-c22ed5908ce4");
-    public static final UUID PRODUCT_OWNER_UUID = UUID.fromString("25bbb7d2-26f3-11ec-9621-0242ac130002");
+
+    public static final UUID PRODUCT_OWNER_ROLE_UUID =
+            UUID.fromString("25bbb7d2-26f3-11ec-9621-0242ac130002");
     public static final UUID TESTER_ROLE_UUID = UUID.fromString("37969e22-26f3-11ec-9621-0242ac130002");
 
     public static final UUID GIANNI_USER_UUID = UUID.fromString("fd282131-d8aa-4819-b0c8-d9e0bfb1b75c");
@@ -35,7 +37,7 @@ public class TestData {
 
     public static Role PRODUCT_OWNER_ROLE() {
         return Role.builder()
-                .id(PRODUCT_OWNER_UUID)
+                .id(PRODUCT_OWNER_ROLE_UUID)
                 .name("Product Owner").build();
     }
 

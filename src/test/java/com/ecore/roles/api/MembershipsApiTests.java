@@ -5,6 +5,7 @@ import com.ecore.roles.model.Role;
 import com.ecore.roles.repository.MembershipRepository;
 import com.ecore.roles.utils.RestAssuredHelper;
 import com.ecore.roles.web.dto.MembershipDto;
+import com.ecore.roles.web.dto.TeamDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +15,7 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
 import static com.ecore.roles.utils.MockUtils.mockGetTeamById;
-import static com.ecore.roles.utils.RestAssuredHelper.createMembership;
-import static com.ecore.roles.utils.RestAssuredHelper.getMemberships;
+import static com.ecore.roles.utils.RestAssuredHelper.*;
 import static com.ecore.roles.utils.TestData.*;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -125,10 +125,11 @@ public class MembershipsApiTests {
     @Test
     void shouldFailToAssignRoleWhenMembershipIsInvalid() {
         Membership expectedMembership = INVALID_MEMBERSHIP();
-        mockGetTeamById(mockServer, expectedMembership.getTeamId(), ORDINARY_CORAL_LYNX_TEAM());
+        mockGetTeamById(mockServer, expectedMembership.getTeamId(),
+                TeamDto.fromModel(ORDINARY_CORAL_LYNX_TEAM()));
 
-        createMembership(expectedMembership)
-                .validate(400,
+        assignRoleToMembership(expectedMembership)
+                .validate(403,
                         "Invalid 'Membership' object. The provided user doesn't belong to the provided team.");
     }
 
@@ -163,7 +164,8 @@ public class MembershipsApiTests {
 
     private MembershipDto createDefaultMembership() {
         Membership expectedMembership = DEFAULT_MEMBERSHIP();
-        mockGetTeamById(mockServer, expectedMembership.getTeamId(), ORDINARY_CORAL_LYNX_TEAM());
+        mockGetTeamById(mockServer, expectedMembership.getTeamId(),
+                TeamDto.fromModel(ORDINARY_CORAL_LYNX_TEAM()));
 
         return createMembership(expectedMembership)
                 .statusCode(201)
